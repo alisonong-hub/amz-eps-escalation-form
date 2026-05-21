@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAS-Escalation Support (EPS) — Email Generator</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 15px;
+    background: #f5f5f3;
+    color: #1a1a1a;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .header {
+    margin-bottom: 2rem;
+  }
+
+  .header-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: #1a56c4;
+    background: #e8f0fd;
+    border: 0.5px solid #b3caf7;
+    border-radius: 6px;
+    padding: 3px 10px;
+    margin-bottom: .75rem;
+  }
+
+  h1 {
+    font-size: 22px;
+    font-weight: 500;
+    color: #1a1a1a;
+    margin-bottom: .25rem;
+  }
+
+  .header p {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.5;
+  }
+
+  .card {
+    background: #fff;
+    border: 0.5px solid #e0e0da;
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-size: 11px;
+    font-weight: 500;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin-bottom: 1rem;
+    padding-bottom: .5rem;
+    border-bottom: 0.5px solid #efefeb;
+  }
+
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .row.full { grid-template-columns: 1fr; }
+
+  .field label {
+    display: block;
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 4px;
+  }
+
+  .field input,
+  .field textarea,
+  .field select {
+    width: 100%;
+    font-size: 14px;
+    padding: 8px 10px;
+    border: 0.5px solid #d0d0ca;
+    border-radius: 8px;
+    background: #fff;
+    color: #1a1a1a;
+    font-family: inherit;
+    transition: border-color .15s;
+    outline: none;
+  }
+
+  .field input:focus,
+  .field textarea:focus,
+  .field select:focus {
+    border-color: #5a8af0;
+    box-shadow: 0 0 0 3px rgba(90,138,240,.12);
+  }
+
+  .field textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+
+
+  .btn-generate {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: .7rem 1.5rem;
+    font-size: 14px;
+    font-weight: 500;
+    background: #1a56c4;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background .15s, transform .1s;
+    font-family: inherit;
+  }
+
+  .btn-generate:hover { background: #1548a8; }
+  .btn-generate:active { transform: scale(.98); }
+
+  .output { display: none; margin-top: 1.5rem; }
+
+  .output-card {
+    background: #fff;
+    border: 0.5px solid #e0e0da;
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .output-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: .75rem;
+  }
+
+  .output-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+  }
+
+  .copy-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    padding: 4px 10px;
+    border: 0.5px solid #d0d0ca;
+    border-radius: 6px;
+    background: transparent;
+    color: #666;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background .1s;
+  }
+
+  .copy-btn:hover { background: #f5f5f3; }
+  .copy-btn.copied { color: #1a7a3a; border-color: #89d4a0; }
+
+  .output-text {
+    font-size: 13px;
+    line-height: 1.75;
+    white-space: pre-wrap;
+    color: #1a1a1a;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  }
+
+  .subject-value {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1a1a1a;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  }
+
+  .to-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+    font-size: 14px;
+  }
+
+  .to-label { color: #888; min-width: 60px; font-size: 13px; }
+  .to-value { font-weight: 500; color: #1a56c4; }
+
+  .reminder {
+    font-size: 12px;
+    color: #888;
+    text-align: center;
+    margin-top: .75rem;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 520px) {
+    .row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="header-tag">Amazon AU</div>
+    <h1>SAS-Escalation Support (EPS)</h1>
+    <p>Fill in the form below to generate a ready-to-send escalation email to au-sas-eps@amazon.com, CC'd to deuriv@amazon.de.</p>
+  </div>
+
+  <div class="card">
+    <div class="section-title">Submission details</div>
+    <div class="row">
+      <div class="field"><label>Name of Contact</label><input type="text" id="contact-name" placeholder="e.g. Alison Ong"></div>
+      <div class="field"><label>Merchant Token</label>
+        <select id="merchant-token">
+          <option value="">Select merchant account</option>
+          <option value="A38UP2R9AHYZBS">A38UP2R9AHYZBS (Pattern Products AU)</option>
+          <option value="A31TE9Q3PHCGQ0">A31TE9Q3PHCGQ0 (Pattern Australia)</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="field"><label>Seller Email</label>
+        <select id="seller-email">
+          <option value="">Select seller account</option>
+          <option value="marketplaces.products.au@pattern.com">marketplaces.products.au@pattern.com (Pattern Products AU)</option>
+          <option value="marketplaces.au@pattern.com">marketplaces.au@pattern.com (Pattern Australia)</option>
+        </select>
+      </div>
+      <div class="field"><label>ASIN(s) Impacted</label><input type="text" id="asins" placeholder="e.g. B08XYZ1234, B09ABC5678"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>Issue type</label>
+        <select id="issue-type">
+          <option value="">Select issue type</option>
+          <option>Customer Service Performance</option>
+          <option>Shipping Performance</option>
+          <option>Suspected IP Violation</option>
+          <option>Received IP Complaint</option>
+          <option>Product Authenticity Complaint</option>
+          <option>Product Condition Complaint</option>
+          <option>Food and Product Safety Issue</option>
+          <option>Listing Policy Violation</option>
+          <option>Restricted Product Policy Violation</option>
+          <option>Customer Product Reviews Policy Violation</option>
+          <option>Other Policy Violation</option>
+          <option>Reporting Abuse</option>
+          <option>Selling Application</option>
+        </select>
+      </div>
+      <div class="field"><label>Issue date</label><input type="date" id="issue-date"></div>
+    </div>
+    <div class="row full">
+      <div class="field">
+        <label>Issue Details</label>
+        <textarea id="issue-details" placeholder="Describe the issue clearly — what happened, what the impact is, and why you believe the appeal was wrongly denied."></textarea>
+        <div id="example-hint" style="display:none;margin-top:8px;padding:10px 12px;background:#f0f5ff;border:0.5px solid #b3caf7;border-radius:8px;font-size:13px;line-height:1.6;color:#333">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+            <div>
+              <span style="font-size:11px;font-weight:500;color:#1a56c4;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px">Example for this issue type</span>
+              <span id="example-text"></span>
+            </div>
+            <button type="button" onclick="useExample('issue-details','issue')" style="flex-shrink:0;padding:5px 12px;font-size:12px;font-weight:500;border:0.5px solid #1a56c4;border-radius:6px;background:#fff;color:#1a56c4;cursor:pointer;font-family:inherit;white-space:nowrap">Use this</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row full">
+      <div class="field">
+        <label>What steps/actions have been taken so far?</label>
+        <textarea id="steps-taken" placeholder="e.g. Submitted POA on [date], used Call me now on [date], appealed via Seller Central on [date] — rejected on [date]."></textarea>
+        <div id="steps-hint" style="display:none;margin-top:8px;padding:10px 12px;background:#f0f5ff;border:0.5px solid #b3caf7;border-radius:8px;font-size:13px;line-height:1.6;color:#333">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+            <div>
+              <span style="font-size:11px;font-weight:500;color:#1a56c4;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px">Example for this issue type</span>
+              <span id="steps-text"></span>
+            </div>
+            <button type="button" onclick="useExample('steps-taken','steps')" style="flex-shrink:0;padding:5px 12px;font-size:12px;font-weight:500;border:0.5px solid #1a56c4;border-radius:6px;background:#fff;color:#1a56c4;cursor:pointer;font-family:inherit;white-space:nowrap">Use this</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row full">
+      <div class="field"><label>What is your desired result?</label><textarea id="desired-result" placeholder="e.g. Reinstatement of ASIN B08XYZ1234 / removal of the policy violation." style="min-height:60px"></textarea></div>
+    </div>
+    <div class="row full">
+      <div class="field"><label>Related case(s) (if applicable)</label><input type="text" id="related-cases" placeholder="e.g. Case ID 1234567890"></div>
+    </div>
+    <div class="row full">
+      <div class="field">
+        <label>Is the appeal or related documents attached? (if applicable)</label>
+        <div id="doc-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:6px"></div>
+        <div style="display:flex;gap:8px">
+          <input type="text" id="doc-input" placeholder="e.g. Plan of Action" style="flex:1" onkeydown="if(event.key==='Enter'){event.preventDefault();addDoc()}">
+          <button type="button" onclick="addDoc()" style="padding:8px 14px;border:0.5px solid #d0d0ca;border-radius:8px;background:#fff;cursor:pointer;font-size:13px;color:#1a56c4;font-family:inherit;white-space:nowrap"><i class="ti ti-plus"></i> Add</button>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="field"><label>Marketplace Consultant Email/Name</label>
+        <input type="text" id="consultant" value="Vivien Deuringer — deuriv@amazon.de" readonly style="background:#f8f8f5;color:#555;cursor:default;">
+      </div>
+      <div class="field"><label>Did you use the "Call me now" button in Seller Central?</label>
+        <select id="call-me-now">
+          <option value="">Select</option>
+          <option>Yes</option>
+          <option>No</option>
+        </select>
+      </div>
+    </div>
+    <div class="row full">
+      <div class="field"><label>Account Health Support (AHS) Case ID</label><input type="text" id="ahs-case" placeholder="e.g. 9876543210"></div>
+    </div>
+  </div>
+
+  <button class="btn-generate" onclick="generate()">
+    <i class="ti ti-mail"></i> Generate email
+  </button>
+
+  <div class="output" id="output">
+    <div class="output-card">
+      <div class="to-row"><span class="to-label">To:</span><span class="to-value">au-sas-eps@amazon.com</span></div>
+      <div class="to-row"><span class="to-label">CC:</span><span class="to-value" id="cc-value">deuriv@amazon.de</span></div>
+      <div style="height:12px"></div>
+      <div class="output-header">
+        <div class="output-label">Subject line</div>
+        <button class="copy-btn" onclick="copyField('subject-out', this)"><i class="ti ti-copy"></i> Copy</button>
+      </div>
+      <div class="subject-value" id="subject-out"></div>
+    </div>
+
+    <div class="output-card">
+      <div class="output-header" style="margin-bottom:12px">
+        <div class="output-label">Email fields</div>
+        <button class="copy-btn" onclick="copyField('body-out', this)"><i class="ti ti-copy"></i> Copy email</button>
+      </div>
+      <table id="field-table" style="width:100%;border-collapse:collapse;font-size:13px">
+        <colgroup><col style="width:36%"><col style="width:64%"></colgroup>
+      </table>
+      <div id="body-out" style="display:none"></div>
+    </div>
+
+    <p class="reminder">Attach the completed SAS Escalation Form and all supporting documents before sending.<br>One issue per email — do not combine multiple issues in a single case.</p>
+  </div>
+
+</div>
+
+<script>
+const issueExamples = {
+  'Customer Service Performance': {
+    issue: 'I believe that I have met the Order Performance Programme Policy but my Order Defect Rate / Late Shipment Rate / Cancellation Rate / Valid Tracking Rate is indicating I have not met the policy.',
+    steps: 'I have contacted Account Health Support (AHS) but have not heard back in more than 72 hours, and I believe that my appeal may have been denied in error because [details ...].'
+  },
+  'Shipping Performance': {
+    issue: 'I believe that I have met the Order Performance Programme Policy but my Order Defect Rate / Late Shipment Rate / Cancellation Rate / Valid Tracking Rate is indicating I have not met the policy.',
+    steps: 'I have contacted Account Health Support (AHS) but have not heard back in more than 72 hours, and I believe that my appeal may have been denied in error because [details ...].'
+  },
+  'Suspected IP Violation': {
+    issue: 'I believe my listing has been incorrectly flagged for a suspected intellectual property violation. My product does not infringe on any intellectual property rights and I have supporting documentation to confirm this.',
+    steps: 'I have contacted Account Health Support (AHS) but have not heard back in more than 72 hours, and I believe that my appeal may have been denied in error because [details ...].'
+  },
+  'Received IP Complaint': {
+    issue: 'I have received an intellectual property complaint which I believe was filed in error. I have the right to sell this product and the complaint does not apply to my listing.',
+    steps: 'I have contacted Account Health Support (AHS) but have not heard back in more than 72 hours, and I believe that my appeal may have been denied in error because [details ...].'
+  },
+  'Product Authenticity Complaint': {
+    issue: 'I have received a product authenticity complaint which I believe was filed in error. I have invoices and documentation from my supplier confirming the authenticity of my products.',
+    steps: 'I have followed the standard appeal path, including contacting Account Health Support (AHS), but I have not heard back in more than 72 hours and I believe that my appeal may have been denied in error because [details ...].'
+  },
+  'Product Condition Complaint': {
+    issue: null,
+    steps: 'I have followed the standard appeal path, including contacting Account Health Support (AHS), but I have not heard back in more than 72 hours and I believe that my appeal may have been denied in error because [details ...]. I have supporting details on why I believe the appeal may have been denied in error.'
+  },
+  'Food and Product Safety Issue': {
+    issue: null,
+    steps: 'I have followed the standard appeal path, including contacting Account Health Support (AHS), but I have not heard back in more than 72 hours and I believe that my appeal may have been denied in error because [details ...]. I have supporting details on why I believe the appeal may have been denied in error.'
+  },
+  'Reporting Abuse': {
+    issue: 'I want to report abuse of Amazon policies by a Customer or another Seller.',
+    steps: 'I have followed the existing Report Abuse process in the Account Health page, but I am still observing instances of the potential abuse.'
+  },
+  'Selling Application': {
+    issue: 'I have created a Selling Application for approval to sell a Brand or within a Category, and I have been rejected.',
+    steps: 'I have responded on the Case ID explaining why I believe this may have been rejected in error and have not heard back in more than 72 hours.'
+  },
+}
+
+function showHint(hintId, textId, text) {
+  const hint = document.getElementById(hintId)
+  const el = document.getElementById(textId)
+  if (text) { el.textContent = text; hint.style.display = 'block' }
+  else { hint.style.display = 'none' }
+}
+
+document.getElementById('issue-type').addEventListener('change', function() {
+  const ex = issueExamples[this.value]
+  showHint('example-hint', 'example-text', ex ? ex.issue : null)
+  showHint('steps-hint', 'steps-text', ex ? ex.steps : null)
+})
+
+function useExample(field, hintKey) {
+  const ex = issueExamples[document.getElementById('issue-type').value]
+  if (ex && ex[hintKey]) document.getElementById(field).value = ex[hintKey]
+}
+
+function v(id){ return document.getElementById(id).value.trim() }
+
+const docs = []
+
+function addDoc() {
+  const input = document.getElementById('doc-input')
+  const val = input.value.trim()
+  if (!val) return
+  docs.push(val)
+  input.value = ''
+  renderDocs()
+}
+
+function removeDoc(i) {
+  docs.splice(i, 1)
+  renderDocs()
+}
+
+function renderDocs() {
+  const list = document.getElementById('doc-list')
+  list.innerHTML = docs.map((d, i) => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#f8f8f5;border:0.5px solid #e0e0da;border-radius:6px;font-size:13px">
+      <span>${d}</span>
+      <button type="button" onclick="removeDoc(${i})" style="border:none;background:none;cursor:pointer;color:#999;font-size:16px;line-height:1;padding:0 2px">&times;</button>
+    </div>`).join('')
+}
+
+function generate() {
+  const issueType = v('issue-type') || '[Issue Type]'
+  const rawDate = v('issue-date')
+  const issueDate = rawDate
+    ? new Date(rawDate + 'T12:00:00').toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' })
+    : '[Issue Date]'
+
+  const consultant = 'Vivien Deuringer — deuriv@amazon.de'
+  document.getElementById('cc-value').textContent = 'deuriv@amazon.de'
+
+  document.getElementById('subject-out').textContent =
+    `SAS-Escalation / ${issueType} / ${issueDate} / for ${issueType}`
+
+  const body = `Hi SAS-EPS Team,
+
+I am writing to escalate an unresolved enforcement issue that has not been resolved through the standard appeal process in Seller Central.
+
+Name of Contact: ${v('contact-name') || 'N/A'}
+Merchant Token: ${v('merchant-token') || 'N/A'}
+Seller Email: ${v('seller-email') || 'N/A'}
+ASIN(s) Impacted: ${v('asins') || 'N/A'}
+Issue Type: ${issueType}
+
+Issue Details:
+${v('issue-details') || 'N/A'}
+
+What steps/actions have been taken so far?
+${v('steps-taken') || 'N/A'}
+
+What is your desired result?
+${v('desired-result') || 'N/A'}
+
+Related Case(s): ${v('related-cases') || 'N/A'}
+
+Is the appeal or related documents attached?
+${docs.length ? docs.map((d, i) => `${i + 1}. ${d}`).join('\n') : 'N/A'}
+
+Marketplace Consultant Email/Name: Vivien Deuringer — deuriv@amazon.de
+Did you use the "Call me now" button in Seller Central? ${v('call-me-now') || '[Yes/No]'}
+Account Health Support (AHS) Case ID: ${v('ahs-case') || '[Case ID]'}
+
+Please find the completed SAS Escalation Form and all supporting documents attached.
+
+Kind regards,
+${v('contact-name') || 'N/A'}`
+
+  document.getElementById('body-out').textContent = body
+
+  const fields = [
+    ['Name of Contact', v('contact-name') || 'N/A'],
+    ['Merchant Token', v('merchant-token') || 'N/A'],
+    ['Seller Email', v('seller-email') || 'N/A'],
+    ['ASIN(s) Impacted', v('asins') || 'N/A'],
+    ['Issue Type', issueType],
+    ['Issue Details', v('issue-details') || 'N/A'],
+    ['Steps/Actions Taken So Far', v('steps-taken') || 'N/A'],
+    ['Desired Result', v('desired-result') || 'N/A'],
+    ['Related Case(s)', v('related-cases') || 'N/A'],
+    ['Documents Attached', docs.length ? docs.map((d,i)=>`${i+1}. ${d}`).join('\n') : 'N/A'],
+    ['Marketplace Consultant', 'Vivien Deuringer — deuriv@amazon.de'],
+    ['Used "Call me now"?', v('call-me-now') || 'N/A'],
+    ['AHS Case ID', v('ahs-case') || 'N/A'],
+  ]
+
+  const table = document.getElementById('field-table')
+  table.innerHTML = fields.map((([label, val], i) => {
+    const bg = i % 2 === 0 ? '#fff' : '#f8f8f5'
+    const valHtml = val.includes('\n') ? val.split('\n').map(l=>`<div>${l}</div>`).join('') : val
+    return `<tr style="background:${bg}">
+      <td style="padding:8px 10px;color:#666;font-weight:500;vertical-align:top;border-bottom:0.5px solid #efefeb">${label}</td>
+      <td style="padding:8px 10px;color:#1a1a1a;vertical-align:top;border-bottom:0.5px solid #efefeb">${valHtml}</td>
+    </tr>`
+  })).join('')
+
+  document.getElementById('output').style.display = 'block'
+  document.getElementById('output').scrollIntoView({ behavior: 'smooth' })
+}
+
+function copyField(id, btn) {
+  const text = document.getElementById(id).textContent
+  const confirm = () => {
+    btn.innerHTML = '<i class="ti ti-check"></i> Copied'
+    btn.classList.add('copied')
+    setTimeout(() => { btn.innerHTML = '<i class="ti ti-copy"></i> Copy'; btn.classList.remove('copied') }, 2000)
+  }
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(confirm)
+  } else {
+    const ta = document.createElement('textarea')
+    ta.value = text
+    ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0'
+    document.body.appendChild(ta)
+    ta.focus()
+    ta.select()
+    document.execCommand('copy')
+    document.body.removeChild(ta)
+    confirm()
+  }
+}
+</script>
+</body>
+</html>
