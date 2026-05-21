@@ -344,7 +344,10 @@
     <div class="output-card">
       <div class="output-header" style="margin-bottom:12px">
         <div class="output-label">Email fields</div>
-        <button class="copy-btn" onclick="copyEmailHtml(this)"><i class="ti ti-copy"></i> Copy email</button>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="copy-btn" onclick="copyEmailHtml(this)"><i class="ti ti-copy"></i> Copy email</button>
+          <a id="mailto-btn" href="#" class="copy-btn" style="text-decoration:none"><i class="ti ti-send"></i> Open in email client</a>
+        </div>
       </div>
       <table id="field-table" style="width:100%;border-collapse:collapse;font-size:13px">
         <colgroup><col style="width:36%"><col style="width:64%"></colgroup>
@@ -453,12 +456,12 @@ function generate() {
   const consultant = 'Vivien Deuringer — deuriv@amazon.de'
   document.getElementById('cc-value').textContent = 'deuriv@amazon.de'
 
-  document.getElementById('subject-out').textContent =
-    `SAS-Escalation / ${issueType} / ${issueDate} / for ${issueType}`
+  const subject = `SAS-Escalation / ${issueType} / ${issueDate} / for ${issueType}`
+  document.getElementById('subject-out').textContent = subject
 
-  const body = `Hi SAS-EPS Team,
+  const body = `Hi Escalation Support Team,
 
-I am writing to escalate an unresolved enforcement issue that has not been resolved through the standard appeal process in Seller Central.
+Please find below an unresolved enforcement issue we are requesting your assistance with.
 
 Name of Contact: ${v('contact-name') || 'N/A'}
 Merchant Token: ${v('merchant-token') || 'N/A'}
@@ -517,18 +520,29 @@ ${v('contact-name') || 'N/A'}`
     </tr>`
   }).join('')
 
-  const emailHtml = `<p>Hi SAS-EPS Team,</p>
-<p>I am writing to escalate an unresolved enforcement issue that has not been resolved through the standard appeal process in Seller Central.</p>
-<table border="1" cellpadding="8" cellspacing="0" style="border-collapse:collapse;font-family:Arial,sans-serif;font-size:13px;width:100%">
-  <colgroup><col style="width:36%"><col style="width:64%"></colgroup>
-  ${fields.map(([label, val], i) => {
+  let tableRows = ''
+  fields.forEach(function(pair, i) {
+    const label = pair[0]
+    const val = pair[1]
     const bg = i % 2 === 0 ? '#ffffff' : '#f8f8f5'
-    const valHtml = val.includes('\n') ? val.split('\n').filter(Boolean).map(l=>`<div>${l}</div>`).join('') : val
-    return `<tr style="background:${bg}"><td style="padding:8px 10px;font-weight:bold;vertical-align:top;border:1px solid #ccc">${label}</td><td style="padding:8px 10px;vertical-align:top;border:1px solid #ccc">${valHtml}</td></tr>`
-  }).join('')}
-</table>
-<p>Please find the completed SAS Escalation Form and all supporting documents attached.</p>
-<p>Kind regards,<br>${v('contact-name') || 'N/A'}</p>`
+    const valHtml = val.indexOf('\n') > -1 ? val.split('\n').filter(Boolean).map(function(l){ return '<div>' + l + '</div>' }).join('') : val
+    tableRows += '<tr style="background:' + bg + '"><td style="padding:8px 10px;font-weight:bold;vertical-align:top;border:1px solid #ccc">' + label + '</td><td style="padding:8px 10px;vertical-align:top;border:1px solid #ccc">' + valHtml + '</td></tr>'
+  })
+
+  const mailtoUrl = 'mailto:au-sas-eps@amazon.com'
+    + '?cc=deuriv@amazon.de'
+    + '&subject=' + encodeURIComponent(subject)
+    + '&body=' + encodeURIComponent(body)
+  document.getElementById('mailto-btn').href = mailtoUrl
+
+  const emailHtml = '<p>Hi Escalation Support Team,</p>'
+    + '<p>Please find below an unresolved enforcement issue we are requesting your assistance with.</p>'
+    + '<table border="1" cellpadding="8" cellspacing="0" style="border-collapse:collapse;font-family:Arial,sans-serif;font-size:13px;width:100%">'
+    + '<colgroup><col style="width:36%"><col style="width:64%"></colgroup>'
+    + tableRows
+    + '</table>'
+    + '<p>Please find the completed SAS Escalation Form and all supporting documents attached.</p>'
+    + '<p>Kind regards,<br>' + (v('contact-name') || 'N/A') + '</p>'
 
   document.getElementById('email-html').value = emailHtml
 
