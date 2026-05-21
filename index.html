@@ -346,7 +346,7 @@
         <div class="output-label">Email fields</div>
         <div style="display:flex;gap:8px;align-items:center">
           <button class="copy-btn" onclick="copyEmailHtml(this)"><i class="ti ti-copy"></i> Copy email</button>
-          <a id="mailto-btn" href="#" class="copy-btn" style="text-decoration:none"><i class="ti ti-send"></i> Open in email client</a>
+          <a id="mailto-btn" href="#" class="copy-btn" style="text-decoration:none"><i class="ti ti-send"></i> Open in Email</a>
         </div>
       </div>
       <table id="field-table" style="width:100%;border-collapse:collapse;font-size:13px">
@@ -463,29 +463,30 @@ function generate() {
 
 Please find below an unresolved enforcement issue we are requesting your assistance with.
 
-Name of Contact: ${v('contact-name') || 'N/A'}
-Merchant Token: ${v('merchant-token') || 'N/A'}
-Seller Email: ${v('seller-email') || 'N/A'}
-ASIN(s) Impacted: ${v('asins') || 'N/A'}
-Issue Type: ${issueType}
+────────────────────────────────────────
+Name of Contact:        ${v('contact-name') || 'N/A'}
+Merchant Token:         ${v('merchant-token') || 'N/A'}
+Seller Email:           ${v('seller-email') || 'N/A'}
+ASIN(s) Impacted:       ${v('asins') || 'N/A'}
+Issue Type:             ${issueType}
+────────────────────────────────────────
 
-Issue Details:
+ISSUE DETAILS
 ${v('issue-details') || 'N/A'}
 
-What steps/actions have been taken so far?
+STEPS / ACTIONS TAKEN SO FAR
 ${v('steps-taken') || 'N/A'}
 
-What is your desired result?
+DESIRED RESULT
 ${v('desired-result') || 'N/A'}
 
-Related Case(s): ${v('related-cases') || 'N/A'}
-
-Is the appeal or related documents attached?
-${docs.length ? docs.map((d, i) => `${i + 1}. ${d}`).join('\n') : 'N/A'}
-
-Marketplace Consultant Email/Name: Vivien Deuringer — deuriv@amazon.de
-Did you use the "Call me now" button in Seller Central? ${v('call-me-now') || '[Yes/No]'}
-Account Health Support (AHS) Case ID: ${v('ahs-case') || '[Case ID]'}
+────────────────────────────────────────
+Related Case(s):        ${v('related-cases') || 'N/A'}
+Documents Attached:     ${docs.length ? docs.map((d, i) => `${i + 1}. ${d}`).join(', ') : 'N/A'}
+Marketplace Consultant: Vivien Deuringer — deuriv@amazon.de
+Used "Call me now":     ${v('call-me-now') || 'N/A'}
+AHS Case ID:            ${v('ahs-case') || 'N/A'}
+────────────────────────────────────────
 
 Please find the completed SAS Escalation Form and all supporting documents attached.
 
