@@ -344,12 +344,13 @@
     <div class="output-card">
       <div class="output-header" style="margin-bottom:12px">
         <div class="output-label">Email fields</div>
-        <button class="copy-btn" onclick="copyField('body-out', this)"><i class="ti ti-copy"></i> Copy email</button>
+        <button class="copy-btn" onclick="copyEmailHtml(this)"><i class="ti ti-copy"></i> Copy email</button>
       </div>
       <table id="field-table" style="width:100%;border-collapse:collapse;font-size:13px">
         <colgroup><col style="width:36%"><col style="width:64%"></colgroup>
       </table>
       <div id="body-out" style="display:none"></div>
+      <textarea id="email-html" style="display:none"></textarea>
     </div>
 
     <p class="reminder">Attach the completed SAS Escalation Form and all supporting documents before sending.<br>One issue per email — do not combine multiple issues in a single case.</p>
@@ -506,39 +507,78 @@ ${v('contact-name') || 'N/A'}`
     ['AHS Case ID', v('ahs-case') || 'N/A'],
   ]
 
-  const table = document.getElementById('field-table')
-  table.innerHTML = fields.map((([label, val], i) => {
+  const tableEl = document.getElementById('field-table')
+  tableEl.innerHTML = fields.map(([label, val], i) => {
     const bg = i % 2 === 0 ? '#fff' : '#f8f8f5'
     const valHtml = val.includes('\n') ? val.split('\n').map(l=>`<div>${l}</div>`).join('') : val
     return `<tr style="background:${bg}">
       <td style="padding:8px 10px;color:#666;font-weight:500;vertical-align:top;border-bottom:0.5px solid #efefeb">${label}</td>
       <td style="padding:8px 10px;color:#1a1a1a;vertical-align:top;border-bottom:0.5px solid #efefeb">${valHtml}</td>
     </tr>`
-  })).join('')
+  }).join('')
+
+  const emailHtml = `<p>Hi SAS-EPS Team,</p>
+<p>I am writing to escalate an unresolved enforcement issue that has not been resolved through the standard appeal process in Seller Central.</p>
+<table border="1" cellpadding="8" cellspacing="0" style="border-collapse:collapse;font-family:Arial,sans-serif;font-size:13px;width:100%">
+  <colgroup><col style="width:36%"><col style="width:64%"></colgroup>
+  ${fields.map(([label, val], i) => {
+    const bg = i % 2 === 0 ? '#ffffff' : '#f8f8f5'
+    const valHtml = val.includes('\n') ? val.split('\n').filter(Boolean).map(l=>`<div>${l}</div>`).join('') : val
+    return `<tr style="background:${bg}"><td style="padding:8px 10px;font-weight:bold;vertical-align:top;border:1px solid #ccc">${label}</td><td style="padding:8px 10px;vertical-align:top;border:1px solid #ccc">${valHtml}</td></tr>`
+  }).join('')}
+</table>
+<p>Please find the completed SAS Escalation Form and all supporting documents attached.</p>
+<p>Kind regards,<br>${v('contact-name') || 'N/A'}</p>`
+
+  document.getElementById('email-html').value = emailHtml
 
   document.getElementById('output').style.display = 'block'
   document.getElementById('output').scrollIntoView({ behavior: 'smooth' })
 }
 
+function confirmCopy(btn) {
+  btn.innerHTML = '<i class="ti ti-check"></i> Copied'
+  btn.classList.add('copied')
+  setTimeout(() => { btn.innerHTML = '<i class="ti ti-copy"></i> Copy email'; btn.classList.remove('copied') }, 2000)
+}
+
 function copyField(id, btn) {
   const text = document.getElementById(id).textContent
-  const confirm = () => {
-    btn.innerHTML = '<i class="ti ti-check"></i> Copied'
-    btn.classList.add('copied')
-    setTimeout(() => { btn.innerHTML = '<i class="ti ti-copy"></i> Copy'; btn.classList.remove('copied') }, 2000)
-  }
   if (navigator.clipboard && window.isSecureContext) {
-    navigator.clipboard.writeText(text).then(confirm)
+    navigator.clipboard.writeText(text).then(() => confirmCopy(btn))
   } else {
     const ta = document.createElement('textarea')
     ta.value = text
     ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0'
-    document.body.appendChild(ta)
-    ta.focus()
-    ta.select()
+    document.body.appendChild(ta); ta.focus(); ta.select()
     document.execCommand('copy')
     document.body.removeChild(ta)
-    confirm()
+    confirmCopy(btn)
+  }
+}
+
+function copyEmailHtml(btn) {
+  const html = document.getElementById('email-html').value
+  const plain = document.getElementById('body-out').textContent
+  if (navigator.clipboard && window.isSecureContext && typeof ClipboardItem !== 'undefined') {
+    const item = new ClipboardItem({
+      'text/html': new Blob([html], { type: 'text/html' }),
+      'text/plain': new Blob([plain], { type: 'text/plain' })
+    })
+    navigator.clipboard.write([item]).then(() => confirmCopy(btn))
+  } else {
+    const div = document.createElement('div')
+    div.innerHTML = html
+    div.style.cssText = 'position:fixed;top:0;left:0;opacity:0'
+    document.body.appendChild(div)
+    const sel = window.getSelection()
+    const range = document.createRange()
+    range.selectNodeContents(div)
+    sel.removeAllRanges(); sel.addRange(range)
+    document.execCommand('copy')
+    sel.removeAllRanges()
+    document.body.removeChild(div)
+    confirmCopy(btn)
   }
 }
 </script>
