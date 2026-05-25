@@ -247,17 +247,17 @@
           <option value="">Select issue type</option>
           <option>Customer Service Performance</option>
           <option>Shipping Performance</option>
-          <option>Suspected IP Violation</option>
-          <option>Received IP Complaint</option>
-          <option>Product Authenticity Complaint</option>
-          <option>Product Condition Complaint</option>
-          <option>Food and Product Safety Issue</option>
-          <option>Listing Policy Violation</option>
-          <option>Restricted Product Policy Violation</option>
-          <option>Customer Product Reviews Policy Violation</option>
-          <option>Other Policy Violation</option>
+          <option>Suspected Intellectual Property Violations</option>
+          <option>Received Intellectual Property Complaints</option>
+          <option>Product Authenticity Customer Complaints</option>
+          <option>Product Condition Customer Complaints</option>
+          <option>Food and Product Safety Issues</option>
+          <option>Listing Policy Violations</option>
+          <option>Restricted Product Policy Violations</option>
+          <option>Customer Product Reviews Policy Violations</option>
+          <option>Other Policy Violations</option>
           <option>Reporting Abuse</option>
-          <option>Selling Application</option>
+          <option>Selling Applications (Brand / Category only)</option>
         </select>
       </div>
       <div class="field"><label>Issue date</label><input type="date" id="issue-date"></div>
@@ -265,8 +265,7 @@
     <div class="row full">
       <div class="field">
         <label>Issue Details</label>
-        <textarea id="issue-details" placeholder="Describe the issue clearly — what happened, what the impact is, and why you believe the appeal was wrongly denied."></textarea>
-        <div id="example-hint" style="display:none;margin-top:8px;padding:10px 12px;background:#f0f5ff;border:0.5px solid #b3caf7;border-radius:8px;font-size:13px;line-height:1.6;color:#333">
+        <div id="example-hint" style="display:none;margin-bottom:8px;padding:10px 12px;background:#f0f5ff;border:0.5px solid #b3caf7;border-radius:8px;font-size:13px;line-height:1.6;color:#333">
           <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
             <div>
               <span style="font-size:11px;font-weight:500;color:#1a56c4;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px">Example for this issue type</span>
@@ -275,13 +274,13 @@
             <button type="button" onclick="useExample('issue-details','issue')" style="flex-shrink:0;padding:5px 12px;font-size:12px;font-weight:500;border:0.5px solid #1a56c4;border-radius:6px;background:#fff;color:#1a56c4;cursor:pointer;font-family:inherit;white-space:nowrap">Use this</button>
           </div>
         </div>
+        <textarea id="issue-details" placeholder="Describe the issue clearly — what happened, what the impact is, and why you believe the appeal was wrongly denied."></textarea>
       </div>
     </div>
     <div class="row full">
       <div class="field">
         <label>What steps/actions have been taken so far?</label>
-        <textarea id="steps-taken" placeholder="e.g. Submitted POA on [date], used Call me now on [date], appealed via Seller Central on [date] — rejected on [date]."></textarea>
-        <div id="steps-hint" style="display:none;margin-top:8px;padding:10px 12px;background:#f0f5ff;border:0.5px solid #b3caf7;border-radius:8px;font-size:13px;line-height:1.6;color:#333">
+        <div id="steps-hint" style="display:none;margin-bottom:8px;padding:10px 12px;background:#f0f5ff;border:0.5px solid #b3caf7;border-radius:8px;font-size:13px;line-height:1.6;color:#333">
           <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
             <div>
               <span style="font-size:11px;font-weight:500;color:#1a56c4;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px">Example for this issue type</span>
@@ -290,6 +289,7 @@
             <button type="button" onclick="useExample('steps-taken','steps')" style="flex-shrink:0;padding:5px 12px;font-size:12px;font-weight:500;border:0.5px solid #1a56c4;border-radius:6px;background:#fff;color:#1a56c4;cursor:pointer;font-family:inherit;white-space:nowrap">Use this</button>
           </div>
         </div>
+        <textarea id="steps-taken" placeholder="e.g. Submitted POA on [date], used Call me now on [date], appealed via Seller Central on [date] — rejected on [date]."></textarea>
       </div>
     </div>
     <div class="row full">
@@ -369,39 +369,55 @@
 const issueExamples = {
   'Customer Service Performance': {
     issue: 'I believe that I have met the Order Performance Programme Policy but my Order Defect Rate / Late Shipment Rate / Cancellation Rate / Valid Tracking Rate is indicating I have not met the policy.',
-    steps: 'I have contacted Account Health Support (AHS) but have not heard back in more than 72 hours, and I believe that my appeal may have been denied in error because [details ...].'
+    steps: 'I have contacted Account Health Support (AHS) but I have not heard back in more than 72 hours and I believe that my appeal may have been denied in error because [details ...].'
   },
   'Shipping Performance': {
     issue: 'I believe that I have met the Order Performance Programme Policy but my Order Defect Rate / Late Shipment Rate / Cancellation Rate / Valid Tracking Rate is indicating I have not met the policy.',
-    steps: 'I have contacted Account Health Support (AHS) but have not heard back in more than 72 hours, and I believe that my appeal may have been denied in error because [details ...].'
+    steps: 'I have contacted Account Health Support (AHS) but I have not heard back in more than 72 hours and I believe that my appeal may have been denied in error because [details ...].'
   },
-  'Suspected IP Violation': {
-    issue: 'I believe my listing has been incorrectly flagged for a suspected intellectual property violation. My product does not infringe on any intellectual property rights and I have supporting documentation to confirm this.',
-    steps: 'I have contacted Account Health Support (AHS) but have not heard back in more than 72 hours, and I believe that my appeal may have been denied in error because [details ...].'
-  },
-  'Received IP Complaint': {
-    issue: 'I have received an intellectual property complaint which I believe was filed in error. I have the right to sell this product and the complaint does not apply to my listing.',
-    steps: 'I have contacted Account Health Support (AHS) but have not heard back in more than 72 hours, and I believe that my appeal may have been denied in error because [details ...].'
-  },
-  'Product Authenticity Complaint': {
-    issue: 'I have received a product authenticity complaint which I believe was filed in error. I have invoices and documentation from my supplier confirming the authenticity of my products.',
-    steps: 'I have followed the standard appeal path, including contacting Account Health Support (AHS), but I have not heard back in more than 72 hours and I believe that my appeal may have been denied in error because [details ...].'
-  },
-  'Product Condition Complaint': {
+  'Suspected Intellectual Property Violations': {
     issue: null,
-    steps: 'I have followed the standard appeal path, including contacting Account Health Support (AHS), but I have not heard back in more than 72 hours and I believe that my appeal may have been denied in error because [details ...]. I have supporting details on why I believe the appeal may have been denied in error.'
+    steps: 'I have followed the standard appeal path, including contacting Account Health Support (AHS) but I have not heard back in more than 72 hours and I believe that my appeal may have been denied in error because [details ...]. I have supporting details on why I believe the appeal may have been denied in error.'
   },
-  'Food and Product Safety Issue': {
+  'Received Intellectual Property Complaints': {
     issue: null,
-    steps: 'I have followed the standard appeal path, including contacting Account Health Support (AHS), but I have not heard back in more than 72 hours and I believe that my appeal may have been denied in error because [details ...]. I have supporting details on why I believe the appeal may have been denied in error.'
+    steps: 'I have followed the standard appeal path, including contacting Account Health Support (AHS) but I have not heard back in more than 72 hours and I believe that my appeal may have been denied in error because [details ...]. I have supporting details on why I believe the appeal may have been denied in error.'
+  },
+  'Product Authenticity Customer Complaints': {
+    issue: null,
+    steps: 'I have followed the standard appeal path, including contacting Account Health Support (AHS) but I have not heard back in more than 72 hours and I believe that my appeal may have been denied in error because [details ...]. I have supporting details on why I believe the appeal may have been denied in error.'
+  },
+  'Product Condition Customer Complaints': {
+    issue: null,
+    steps: 'I have followed the standard appeal path, including contacting Account Health Support (AHS) but I have not heard back in more than 72 hours and I believe that my appeal may have been denied in error because [details ...]. I have supporting details on why I believe the appeal may have been denied in error.'
+  },
+  'Food and Product Safety Issues': {
+    issue: null,
+    steps: 'I have followed the standard appeal path, including contacting Account Health Support (AHS) but I have not heard back in more than 72 hours and I believe that my appeal may have been denied in error because [details ...]. I have supporting details on why I believe the appeal may have been denied in error.'
+  },
+  'Listing Policy Violations': {
+    issue: null,
+    steps: 'I have followed the standard appeal path, including contacting Account Health Support (AHS) but I have not heard back in more than 72 hours and I believe that my appeal may have been denied in error because [details ...]. I have supporting details on why I believe the appeal may have been denied in error.'
+  },
+  'Restricted Product Policy Violations': {
+    issue: null,
+    steps: 'I have followed the standard appeal path, including contacting Account Health Support (AHS) but I have not heard back in more than 72 hours and I believe that my appeal may have been denied in error because [details ...]. I have supporting details on why I believe the appeal may have been denied in error.'
+  },
+  'Customer Product Reviews Policy Violations': {
+    issue: null,
+    steps: 'I have followed the standard appeal path, including contacting Account Health Support (AHS) but I have not heard back in more than 72 hours and I believe that my appeal may have been denied in error because [details ...]. I have supporting details on why I believe the appeal may have been denied in error.'
+  },
+  'Other Policy Violations': {
+    issue: null,
+    steps: 'I have followed the standard appeal path, including contacting Account Health Support (AHS) but I have not heard back in more than 72 hours and I believe that my appeal may have been denied in error because [details ...]. I have supporting details on why I believe the appeal may have been denied in error.'
   },
   'Reporting Abuse': {
     issue: 'I want to report abuse of Amazon policies by a Customer or another Seller.',
-    steps: 'I have followed the existing Report Abuse process in the Account Health page, but I am still observing instances of the potential abuse.'
+    steps: 'I have followed the existing Report Abuse in the Account Health page, but I am still observing instances of the potential abuse.'
   },
-  'Selling Application': {
+  'Selling Applications (Brand / Category only)': {
     issue: 'I have created a Selling Application for approval to sell a Brand or within a Category, and I have been rejected.',
-    steps: 'I have responded on the Case ID explaining why I believe this may have been rejected in error and have not heard back in more than 72 hours.'
+    steps: 'I have responded on the Case ID why I believe this may have been rejected in error and have not heard back in more than 72 hours.'
   },
 }
 
