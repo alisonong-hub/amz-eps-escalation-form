@@ -439,11 +439,12 @@ function removeDoc(i) {
 
 function renderDocs() {
   const list = document.getElementById('doc-list')
-  list.innerHTML = docs.map((d, i) => `
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#f8f8f5;border:0.5px solid #e0e0da;border-radius:6px;font-size:13px">
-      <span>${d}</span>
-      <button type="button" onclick="removeDoc(${i})" style="border:none;background:none;cursor:pointer;color:#999;font-size:16px;line-height:1;padding:0 2px">&times;</button>
-    </div>`).join('')
+  list.innerHTML = docs.map(function(d, i) {
+    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#f8f8f5;border:0.5px solid #e0e0da;border-radius:6px;font-size:13px">'
+      + '<span>' + d + '</span>'
+      + '<button type="button" onclick="removeDoc(' + i + ')" style="border:none;background:none;cursor:pointer;color:#999;font-size:16px;line-height:1;padding:0 2px">&times;</button>'
+      + '</div>'
+  }).join('')
 }
 
 function generate() {
@@ -482,7 +483,7 @@ ${v('desired-result') || 'N/A'}
 
 ────────────────────────────────────────
 Related Case(s):        ${v('related-cases') || 'N/A'}
-Documents Attached:     ${docs.length ? docs.map((d, i) => `${i + 1}. ${d}`).join(', ') : 'N/A'}
+Documents Attached:     ${docs.length ? docs.map(function(d, i){ return (i+1) + '. ' + d }).join(', ') : 'N/A'}
 Marketplace Consultant: Vivien Deuringer — deuriv@amazon.de
 Used "Call me now":     ${v('call-me-now') || 'N/A'}
 AHS Case ID:            ${v('ahs-case') || 'N/A'}
@@ -505,7 +506,7 @@ ${v('contact-name') || 'N/A'}`
     ['Steps/Actions Taken So Far', v('steps-taken') || 'N/A'],
     ['Desired Result', v('desired-result') || 'N/A'],
     ['Related Case(s)', v('related-cases') || 'N/A'],
-    ['Documents Attached', docs.length ? docs.map((d,i)=>`${i+1}. ${d}`).join('\n') : 'N/A'],
+    ['Documents Attached', docs.length ? docs.map(function(d,i){ return (i+1)+'. '+d }).join('\n') : 'N/A'],
     ['Marketplace Consultant', 'Vivien Deuringer — deuriv@amazon.de'],
     ['Used "Call me now"?', v('call-me-now') || 'N/A'],
     ['AHS Case ID', v('ahs-case') || 'N/A'],
