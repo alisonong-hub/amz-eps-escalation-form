@@ -300,16 +300,20 @@
     </div>
     <div class="row full">
       <div class="field">
-        <label>Is the appeal or related documents attached? (if applicable)</label>
-        <div id="doc-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:6px"></div>
-        <div style="display:flex;gap:8px">
-          <input type="text" id="doc-input" placeholder="e.g. Plan of Action" style="flex:1" onkeydown="if(event.key==='Enter'){event.preventDefault();addDoc()}">
-          <button type="button" onclick="addDoc()" style="padding:8px 14px;border:0.5px solid #d0d0ca;border-radius:8px;background:#fff;cursor:pointer;font-size:13px;color:#1a56c4;font-family:inherit;white-space:nowrap"><i class="ti ti-plus"></i> Add</button>
+        <label>Are related documents attached? (if applicable)</label>
+        <select id="docs-attached" onchange="toggleDocsNote()">
+          <option value="">Select</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+        <div id="docs-note" style="display:none;margin-top:8px;padding:10px 12px;background:#fff8e6;border:0.5px solid #f0c050;border-radius:8px;font-size:13px;color:#7a5500;line-height:1.5">
+          <i class="ti ti-paperclip" style="vertical-align:middle;margin-right:4px"></i>
+          Please attach the related documents directly in your email before sending.
         </div>
       </div>
     </div>
-    <div class="row">
-      <div class="field"><label>Marketplace Consultant Email/Name</label>
+    <div class="row" style="align-items:end">
+      <div class="field"><label>Marketplace Consultant</label>
         <input type="text" id="consultant" value="Vivien Deuringer — deuriv@amazon.de" readonly style="background:#f8f8f5;color:#555;cursor:default;">
       </div>
       <div class="field"><label>Did you use the "Call me now" button in Seller Central?</label>
@@ -421,30 +425,9 @@ function useExample(field, hintKey) {
 
 function v(id){ return document.getElementById(id).value.trim() }
 
-const docs = []
-
-function addDoc() {
-  const input = document.getElementById('doc-input')
-  const val = input.value.trim()
-  if (!val) return
-  docs.push(val)
-  input.value = ''
-  renderDocs()
-}
-
-function removeDoc(i) {
-  docs.splice(i, 1)
-  renderDocs()
-}
-
-function renderDocs() {
-  const list = document.getElementById('doc-list')
-  list.innerHTML = docs.map(function(d, i) {
-    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#f8f8f5;border:0.5px solid #e0e0da;border-radius:6px;font-size:13px">'
-      + '<span>' + d + '</span>'
-      + '<button type="button" onclick="removeDoc(' + i + ')" style="border:none;background:none;cursor:pointer;color:#999;font-size:16px;line-height:1;padding:0 2px">&times;</button>'
-      + '</div>'
-  }).join('')
+function toggleDocsNote() {
+  const val = document.getElementById('docs-attached').value
+  document.getElementById('docs-note').style.display = val === 'Yes' ? 'block' : 'none'
 }
 
 function generate() {
@@ -483,7 +466,7 @@ ${v('desired-result') || 'N/A'}
 
 ────────────────────────────────────────
 Related Case(s):        ${v('related-cases') || 'N/A'}
-Documents Attached:     ${docs.length ? docs.map(function(d, i){ return (i+1) + '. ' + d }).join(', ') : 'N/A'}
+Appeal/Docs Attached:   ${v('docs-attached') || 'N/A'}
 Marketplace Consultant: Vivien Deuringer — deuriv@amazon.de
 Used "Call me now":     ${v('call-me-now') || 'N/A'}
 AHS Case ID:            ${v('ahs-case') || 'N/A'}
@@ -506,9 +489,9 @@ ${v('contact-name') || 'N/A'}`
     ['Steps/Actions Taken So Far', v('steps-taken') || 'N/A'],
     ['Desired Result', v('desired-result') || 'N/A'],
     ['Related Case(s)', v('related-cases') || 'N/A'],
-    ['Documents Attached', docs.length ? docs.map(function(d,i){ return (i+1)+'. '+d }).join('\n') : 'N/A'],
+    ['Is the appeal or related documents attached?', v('docs-attached') || 'N/A'],
     ['Marketplace Consultant', 'Vivien Deuringer — deuriv@amazon.de'],
-    ['Used "Call me now"?', v('call-me-now') || 'N/A'],
+    ['Did you use the "Call me now" button in Seller Central?', v('call-me-now') || 'N/A'],
     ['AHS Case ID', v('ahs-case') || 'N/A'],
   ]
 
